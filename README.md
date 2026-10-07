@@ -11,15 +11,21 @@ Files
 To preview: open index.html in a browser. Keep all files and the images
 folder together.
 
-Before going live
-  1. Quote form: create a free form at formspree.io, then replace
-     "your-form-id" in the form's action line in index.html with your ID.
-  2. Email: replace hello@example.com (search for it in index.html).
-  3. Prices: replace "Quote on request" when you have them. There is a
-     comment above the list in index.html showing where.
-  4. Gallery: add photos to the images folder and use the snippet in the
+Quote form
+  The form uses Netlify Forms. Requests (and any photos) appear under
+  Forms in your Netlify dashboard. To get each one by email, go to
+  Site configuration > Forms > Form notifications > Add notification >
+  Email notification, and enter ledafterglow@gmail.com.
+
+Things to change later
+  1. Contact email: search for ledafterglow@gmail.com in index.html
+     (it appears once, in the footer).
+  2. Prices: the product list in index.html and the quote form options
+     further down both show prices. Change them in both places.
+  3. Gallery: add photos to the images folder and use the snippet in the
      comment inside the gallery section of index.html.
 
 To put it online
-  Drag this whole folder onto app.netlify.com/drop, or use Cloudflare Pages
-  or GitHub Pages. Then connect your own domain in the host's settings.
+  The site is deployed from the GitHub repository to Netlify. Changes
+  pushed to the main branch update the live site. To use your own domain,
+  connect it in Netlify's domain settings.
