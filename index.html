@@ -263,16 +263,24 @@
         <div class="order__text">
           <h2>Ask for a quote</h2>
           <p class="big">Tell us what you'd like made. We'll reply with a price and postage cost before anything is printed.</p>
-          <p>After you send this, we'll reply with how to share your photo.</p>
+          <p>Attach your photos with the form, or send them when we reply.</p>
         </div>
 
         <!--
-          CONNECT THE FORM
-          This form needs somewhere to send its messages. The easiest way is a free
-          Formspree account (formspree.io): create a form there, then replace
-          "your-form-id" in the action below with the ID they give you.
+          THE QUOTE FORM (Netlify Forms)
+          Netlify finds this form when the site is deployed and collects every
+          request, including the photos, under Forms in your Netlify dashboard.
+          To get each request by email: Site configuration > Forms >
+          Form notifications > Add notification > Email notification.
+          Photos are shrunk in the browser before sending, because Netlify
+          accepts about 8 MB in total per submission.
         -->
-        <form class="form" action="https://formspree.io/f/your-form-id" method="POST">
+        <form class="form" name="quote" method="POST" enctype="multipart/form-data"
+              data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="quote">
+          <p class="form__trap" aria-hidden="true">
+            <label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label>
+          </p>
           <div class="form__row">
             <label for="name">Your name
               <input type="text" id="name" name="name" autocomplete="name" required>
@@ -304,10 +312,25 @@
               </select>
             </label>
           </div>
+          <div class="form__photos" id="photo-fields">
+            <label for="photo1">Photo 1 (optional)
+              <input type="file" id="photo1" name="photo1" accept="image/*">
+            </label>
+            <label for="photo2" hidden>Photo 2
+              <input type="file" id="photo2" name="photo2" accept="image/*">
+            </label>
+            <label for="photo3" hidden>Photo 3
+              <input type="file" id="photo3" name="photo3" accept="image/*">
+            </label>
+            <label for="photo4" hidden>Photo 4
+              <input type="file" id="photo4" name="photo4" accept="image/*">
+            </label>
+            <p class="form__hint">Clear, well-lit photos work best. You can also send them when we reply.</p>
+          </div>
           <label for="details">Tell us about it
             <textarea id="details" name="details" rows="5" placeholder="Who is in the photo, who it's for, and when you need it."></textarea>
           </label>
-          <button class="btn" type="submit">Send request</button>
+          <button class="btn" type="submit" id="send">Send request</button>
           <p class="form__status" role="status" aria-live="polite"></p>
         </form>
       </div>
@@ -355,14 +378,83 @@
         setLit(!isLit());
       });
 
-      // Quote form: explain clearly if it has not been connected yet.
+      // Quote form
       var form = document.querySelector('.form');
       var status = form.querySelector('.form__status');
+      var sendBtn = document.getElementById('send');
+      var photoSelect = document.getElementById('photos');
+      var photoNames = ['photo1', 'photo2', 'photo3', 'photo4'];
+      var MAX_TOTAL = 7 * 1024 * 1024; // Netlify accepts about 8 MB per submission
+
+      // Show one photo field for each photo the customer chose.
+      function showPhotoFields() {
+        var count = photoSelect.selectedIndex + 1;
+        photoNames.forEach(function (name, i) {
+          document.getElementById(name).parentNode.hidden = i >= count;
+        });
+      }
+      photoSelect.addEventListener('change', showPhotoFields);
+      showPhotoFields();
+
+      // Shrink big phone photos so they fit within the upload limit.
+      function shrink(file) {
+        return new Promise(function (resolve) {
+          if (!file.type || file.type.indexOf('image/') !== 0) { resolve(file); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            URL.revokeObjectURL(url);
+            var scale = Math.min(1, 2000 / Math.max(img.width, img.height));
+            if (scale === 1 && file.size < 1500000) { resolve(file); return; }
+            var canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(function (blob) {
+              resolve(blob ? new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }) : file);
+            }, 'image/jpeg', 0.88);
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+          img.src = url;
+        });
+      }
+
+      function fallbackEmail() {
+        var link = document.querySelector('.footer a[href^="mailto:"]');
+        return link ? link.textContent : 'us';
+      }
+
       form.addEventListener('submit', function (e) {
-        if (form.action.indexOf('your-form-id') !== -1) {
-          e.preventDefault();
-          status.textContent = 'This form is not connected yet. Please email hello@example.com instead.';
-        }
+        e.preventDefault();
+        sendBtn.disabled = true;
+        status.textContent = 'Sending...';
+        var data = new FormData(form);
+        var total = 0;
+
+        Promise.all(photoNames.map(function (name) {
+          var file = data.get(name);
+          if (!file || !file.size) { data.delete(name); return Promise.resolve(); }
+          return shrink(file).then(function (small) {
+            total += small.size;
+            data.set(name, small, small.name);
+          });
+        })).then(function () {
+          if (total > MAX_TOTAL) {
+            throw new Error('too-big');
+          }
+          return fetch('/', { method: 'POST', body: data });
+        }).then(function (response) {
+          if (!response.ok) { throw new Error('failed'); }
+          form.reset();
+          showPhotoFields();
+          status.textContent = "Thanks, we've got your request. We'll reply by email soon.";
+        }).catch(function (err) {
+          status.textContent = err.message === 'too-big'
+            ? 'Those photos are too large to send together. Try fewer photos, or email them to ' + fallbackEmail() + '.'
+            : 'That did not send. Please email ' + fallbackEmail() + ' instead.';
+        }).then(function () {
+          sendBtn.disabled = false;
+        });
       });
     })();
   </script>
