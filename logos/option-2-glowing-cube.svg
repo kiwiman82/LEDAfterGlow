@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" overflow="visible"><defs><linearGradient id="xr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1d2"/><stop offset=".6" stop-color="#ffc27a"/><stop offset="1" stop-color="#f0923f"/></linearGradient><filter id="xb" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+<clipPath id="xcl"><polygon points="15,30 50,50 50,90 15,70"/></clipPath><clipPath id="xcr"><polygon points="50,50 85,30 85,70 50,90"/></clipPath></defs>
+<circle cx="64" cy="56" r="32" fill="#ffc27a" opacity=".45" filter="url(#xb)"/>
+<polygon points="15,30 50,50 50,90 15,70" fill="#b9b4aa"/>
+<polygon points="50,10 85,30 50,50 15,30" fill="#ece6d8"/>
+<polygon points="50,50 85,30 85,70 50,90" fill="url(#xr)"/>
+<g clip-path="url(#xcl)" stroke="#0f1426" stroke-opacity=".16" stroke-width="1"><path d="M15 38 L50 58 M15 46 L50 66 M15 54 L50 74 M15 62 L50 82"/></g>
+<g clip-path="url(#xcr)" stroke="#0f1426" stroke-opacity=".16" stroke-width="1"><path d="M50 58 L85 38 M50 66 L85 46 M50 74 L85 54 M50 82 L85 62"/></g>
+<g fill="none" stroke="#0f1426" stroke-width="1.5" stroke-linejoin="round"><polygon points="50,10 85,30 85,70 50,90 15,70 15,30"/><path d="M15 30 L50 50 L85 30 M50 50 V90"/></g></svg>
