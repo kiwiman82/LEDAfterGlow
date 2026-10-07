@@ -540,7 +540,7 @@ h2 {
 }
 .form-row {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.5fr) auto;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.5fr) 11rem;
   align-items: baseline;
   gap: 24px;
   padding-block: 28px;
@@ -555,6 +555,8 @@ h2 {
   color: var(--muted);
 }
 .form-row__price {
+  justify-self: end;
+  text-align: right;
   font-family: var(--font-display);
   font-size: 0.98rem;
   color: var(--amber);
