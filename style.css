@@ -302,6 +302,7 @@ p {
 }
 
 .plate__bloom {
+  pointer-events: none; /* decorative glow, must never block clicks on the switch */
   position: absolute;
   inset: -20% -26%;
   z-index: -1;
@@ -373,6 +374,8 @@ p {
 }
 
 .lamp-switch {
+  position: relative;
+  z-index: 2; /* always above the glow around the plaque */
   display: inline-flex;
   align-items: center;
   gap: 12px;
