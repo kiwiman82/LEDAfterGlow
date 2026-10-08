@@ -1049,10 +1049,28 @@ details p {
     gap: 1px;
   }
   .heart {
-    --hw: calc((100vw - 2 * var(--gutter) - 56px - 8px - 8px) / 9);
+    --hw: calc((100vw - 2 * var(--gutter) - 56px - 8px - 9px) / 9);
+  }
+  /* Two rows: the name across the whole width, then the quote button below.
+     The header scrolls away on phones so it does not use up the screen. */
+  .nav {
+    position: relative;
+  }
+  .nav__inner {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-block: 14px;
+    min-height: 0;
+  }
+  .nav .brand {
+    flex: 1 1 100%;
+    justify-content: space-between;
   }
   .nav .btn--small {
-    display: none;
+    flex: 1 1 100%;
+    text-align: center;
+    padding-block: 0.7em;
+    font-size: 1rem;
   }
   .form__row {
     grid-template-columns: minmax(0, 1fr);
