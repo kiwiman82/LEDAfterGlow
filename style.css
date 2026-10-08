@@ -33,6 +33,13 @@
   initial-value: 1;
 }
 
+/* A slow breathing pulse for the logo glow (1 = normal). */
+@property --pulse {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 @property --lit {
   syntax: "<number>";
   inherits: true;
@@ -241,6 +248,11 @@ p {
    after the light is switched off, like glow-in-the-dark plastic. */
 .mk-glow {
   opacity: calc(var(--glow) * 0.5);
+  animation: tile-pulse 6s ease-in-out infinite;
+}
+@keyframes tile-pulse {
+  0%, 100% { opacity: calc(var(--glow) * 0.25); }
+  50% { opacity: calc(var(--glow) * 0.7); }
 }
 /* Afterglow: each letter sits in its own little litho heart, white like the
    L.E.D. tiles, with a grey letter. The hearts fade from bright to about 35%
@@ -267,8 +279,15 @@ p {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
   opacity: calc(1 - var(--i) * 0.08);
   filter:
-    drop-shadow(0 0 calc(var(--glow) * 7px) rgba(255, 194, 122, calc(var(--glow) * 0.7)))
+    drop-shadow(0 0 calc(var(--glow) * var(--pulse) * 7px) rgba(255, 194, 122, calc(var(--glow) * var(--pulse) * 0.7)))
     drop-shadow(0 0 calc(var(--glow) * 2px) rgba(255, 230, 190, calc(var(--glow) * 0.4)));
+  /* The glow breathes slowly and ripples from the A to the W, like an afterglow */
+  animation: heart-pulse 6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.45s);
+}
+@keyframes heart-pulse {
+  0%, 100% { --pulse: 0.35; }
+  50% { --pulse: 1.5; }
 }
 .heart::before {
   content: "";
@@ -1032,6 +1051,10 @@ details p {
   .shot--lit,
   .shot--lit .shot__on {
     transition: none;
+  }
+  .heart,
+  .mk-glow {
+    animation: none;
   }
   .btn,
   .shot--empty::before {
