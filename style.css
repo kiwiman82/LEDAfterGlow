@@ -241,7 +241,7 @@ p {
   text-decoration: none;
 }
 .brand__mark {
-  width: 76px;
+  width: 84px;
   height: auto;
   flex: none;
   overflow: visible;
@@ -270,11 +270,12 @@ p {
   isolation: isolate;
   display: grid;
   place-items: center;
-  width: 27px;
-  height: 25px;
-  padding-bottom: 2px;
+  --hw: 31px; /* heart width: everything else scales from it */
+  width: var(--hw);
+  height: calc(var(--hw) * 0.93);
+  padding-bottom: calc(var(--hw) * 0.07);
   font-family: var(--font-display);
-  font-size: 0.98rem;
+  font-size: calc(var(--hw) * 0.58);
   font-weight: 700;
   line-height: 1;
   color: #7d8194;
@@ -1036,40 +1037,27 @@ details p {
 }
 
 @media (max-width: 520px) {
+  /* On phones the name gets the whole header: the hearts grow to fill the
+     width (the Get a quote button is in the hero and further down the page) */
   .brand {
     gap: 8px;
   }
   .brand__mark {
-    width: 50px;
+    width: 56px;
   }
   .brand__word {
     gap: 1px;
   }
   .heart {
-    width: clamp(15px, 4.6vw, 21px);
-    height: clamp(14px, 4.2vw, 19px);
-    padding-bottom: 1px;
-    font-size: clamp(0.58rem, 2.6vw, 0.78rem);
+    --hw: calc((100vw - 2 * var(--gutter) - 56px - 8px - 8px) / 9);
   }
-  .btn--small {
-    white-space: nowrap;
-    padding-inline: 1em;
+  .nav .btn--small {
+    display: none;
   }
   .form__row {
     grid-template-columns: minmax(0, 1fr);
   }
 }
-
-@media (max-width: 400px) {
-  .brand__mark {
-    width: 40px;
-  }
-  .btn--small {
-    font-size: 0.85rem;
-    padding-inline: 0.8em;
-  }
-}
-
 /* ---------- Motion preferences ---------- */
 
 @media (prefers-reduced-motion: reduce) {
