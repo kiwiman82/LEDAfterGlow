@@ -497,7 +497,7 @@
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
-        // Optional total upload payload check (10MB FormSubmit limit)
+        // Check total upload payload size (10MB FormSubmit limit)
         var totalBytes = 0;
         photoNames.forEach(function (name) {
           var input = document.getElementById(name);
@@ -515,10 +515,10 @@
 
         var data = new FormData(form);
 
-        // Remove unselected or empty file inputs
+        // Safely strip empty file inputs using DOM elements directly before post
         photoNames.forEach(function (name) {
-          var file = data.get(name);
-          if (!file || !file.size) {
+          var input = document.getElementById(name);
+          if (input && (!input.files || input.files.length === 0 || input.files[0].size === 0)) {
             data.delete(name);
           }
         });
