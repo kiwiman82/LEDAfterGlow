@@ -254,11 +254,11 @@
         </div>
 
         <!--
-          THE QUOTE FORM (FormSubmit AJAX endpoint)
-          Submissions are sent asynchronously to ledafterglow@gmail.com via FormSubmit AJAX route.
+          THE QUOTE FORM (FormSubmit Standard Native Endpoint)
+          Submissions POST natively to FormSubmit to preserve multipart binary file attachments.
         -->
         <form class="form" method="POST" enctype="multipart/form-data"
-              action="https://formsubmit.co/ajax/ledafterglow@gmail.com">
+              action="https://formsubmit.co/ledafterglow@gmail.com">
           <input type="hidden" name="_captcha" value="false">
           <p class="form__trap" aria-hidden="true">
             <label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label>
@@ -493,11 +493,8 @@
       });
       updateTotal();
 
-      // Form submission: intercept and POST via fetch using FormSubmit AJAX route
+      // Form submission handling for Native POST
       form.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        // Check total upload payload size (10MB FormSubmit limit)
         var totalBytes = 0;
         photoNames.forEach(function (name) {
           var input = document.getElementById(name);
@@ -505,44 +502,23 @@
             totalBytes += input.files[0].size;
           }
         });
+
         if (totalBytes > 10 * 1024 * 1024) {
+          e.preventDefault();
           status.textContent = 'Uploaded files total more than 10MB. Please use smaller files or attach fewer photos.';
           return;
         }
 
-        sendBtn.disabled = true;
-        status.textContent = 'Sending...';
-
-        var data = new FormData(form);
-
-        // Safely strip empty file inputs using DOM elements directly before post
+        // Disable unselected file inputs so empty fields are not included in the POST request
         photoNames.forEach(function (name) {
           var input = document.getElementById(name);
-          if (input && (!input.files || input.files.length === 0 || input.files[0].size === 0)) {
-            data.delete(name);
+          if (input && (!input.files || input.files.length === 0)) {
+            input.disabled = true;
           }
         });
 
-        fetch(form.action, {
-          method: 'POST',
-          body: data,
-          headers: {
-            'Accept': 'application/json'
-          }
-        }).then(function (response) {
-          if (!response.ok) { throw new Error('Network response was not ok'); }
-          return response.json();
-        }).then(function (result) {
-          form.reset();
-          showPhotoFields();
-          status.textContent = "Thanks! We've got your request. We'll reply by email soon.";
-          updateTotal();
-        }).catch(function (err) {
-          console.error('Form submission error:', err);
-          status.textContent = 'That did not send. Please try again or email ledafterglow@gmail.com.';
-        }).finally(function () {
-          sendBtn.disabled = false;
-        });
+        sendBtn.disabled = true;
+        status.textContent = 'Sending...';
       });
     })();
 
