@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>L.E.D. Afterglow | Custom lithophanes</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <meta name="description" content="Custom lithophanes made to keep the people and pets you love close. Plain white plastic until a light goes on, then your photo appears.">
+  <meta name="description" content="Custom lithophanes made in New Zealand, and available in New Zealand only, to keep the people and pets you love close. Plain white plastic until a light goes on, then your photo appears.">
   <meta name="theme-color" content="#0f1426">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +103,7 @@
             <a class="btn" href="#order">Get a quote</a>
             <a class="btn btn--ghost" href="#how">How it works</a>
           </div>
+          <p class="hero__nz"><span class="hero__nz-dot" aria-hidden="true"></span>Made in New Zealand. Available in NZ only.</p>
         </div>
 
         <div class="hero__plate">
@@ -187,7 +188,7 @@
             <span class="form-row__price">+$10</span>
           </li>
         </ul>
-        <p class="note">Each piece is about the size of a 1 litre carton. Prices are in NZD. Postage is extra, and we'll confirm the cost before you pay. Not sure which suits you? Ask in the form.</p>
+        <p class="note">Each piece is about the size of a 1 litre carton. Prices are in NZD. We're based in New Zealand and currently only supply within New Zealand. Postage is extra, and we'll confirm the cost before you pay. Not sure which suits you? Ask in the form.</p>
       </div>
     </section>
 
@@ -247,6 +248,10 @@
             <p>Both show your photo when the light is on. The glow-in-the-dark option also gives off a soft glow in a dark room after the light has been on. Glow-in-the-dark adds $10.</p>
           </details>
           <details>
+            <summary>Do you ship outside New Zealand?</summary>
+            <p>Not at the moment. We're based in New Zealand and only supply within New Zealand. If that changes, we'll say so here.</p>
+          </details>
+          <details>
             <summary>Can I order one as a gift or memorial?</summary>
             <p>Yes. Tell us who it's for and the date you need it by, and we'll let you know if we can make it in time. For a memorial, there's no rush, and we're happy to help you choose the right photo.</p>
           </details>
@@ -261,6 +266,7 @@
           <h2>Ask for a <em class="script">quote</em></h2>
           <p class="big">Tell us what you'd like made. We'll reply with a price and postage cost before anything is made.</p>
           <p>Attach your photos with the form, or send them when we reply.</p>
+          <p class="order__nz">We're based in New Zealand and currently only supply within New Zealand.</p>
         </div>
 
         <!-- Hidden Target Iframe to handle background native form submission -->
@@ -347,7 +353,7 @@
           <span class="heart" style="--i:0" aria-hidden="true">A</span><span class="heart" style="--i:1" aria-hidden="true">F</span><span class="heart" style="--i:2" aria-hidden="true">T</span><span class="heart" style="--i:3" aria-hidden="true">E</span><span class="heart" style="--i:4" aria-hidden="true">R</span><span class="heart" style="--i:5" aria-hidden="true">G</span><span class="heart" style="--i:6" aria-hidden="true">L</span><span class="heart" style="--i:7" aria-hidden="true">O</span><span class="heart" style="--i:8" aria-hidden="true">W</span>
         </span>
       </a>
-      <p>L.E.D. stands for Lithophanes by Emma &amp; Duncan. Made to order, made to last.</p>
+      <p>L.E.D. stands for Lithophanes by Emma &amp; Duncan. Made to order in New Zealand, made to last. Available in New Zealand only.</p>
       <a href="mailto:ledafterglow@gmail.com">ledafterglow@gmail.com</a>
       <p class="footer__small">&copy; 2026 L.E.D. Afterglow</p>
     </div>
@@ -663,6 +669,16 @@
           modal.classList.remove('is-visible');
           modal.setAttribute('aria-hidden', 'true');
         }
+      });
+
+      // Gallery pieces: on touch screens a tap switches the light on, and the next tap switches it off.
+      // (On a mouse, hovering does it, so clicks are left alone.)
+      var galleryTouch = window.matchMedia('(hover: none)');
+      document.querySelectorAll('.shot--lit').forEach(function (shot) {
+        shot.addEventListener('click', function () {
+          if (!galleryTouch.matches) return;
+          shot.classList.toggle('is-lit');
+        });
       });
     })();
 

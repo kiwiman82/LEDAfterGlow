@@ -714,15 +714,22 @@ h2 {
   opacity: 0;
   transition: opacity 0.9s cubic-bezier(0.3, 0.1, 0.2, 1);
 }
-.shot--lit:hover .shot__on,
 .shot--lit:focus-visible .shot__on,
-.shot--lit:focus .shot__on {
+.shot--lit.is-lit .shot__on {
   opacity: 1;
 }
-.shot--lit:hover,
 .shot--lit:focus-visible,
-.shot--lit:focus {
+.shot--lit.is-lit {
   box-shadow: 0 0 60px 6px rgba(255, 176, 100, 0.35);
+}
+/* Hover only on devices that really hover, so a tap on a phone does not get stuck "on" */
+@media (hover: hover) {
+  .shot--lit:hover .shot__on {
+    opacity: 1;
+  }
+  .shot--lit:hover {
+    box-shadow: 0 0 60px 6px rgba(255, 176, 100, 0.35);
+  }
 }
 .shot--portrait {
   aspect-ratio: 4 / 5;
@@ -1232,4 +1239,27 @@ details p {
 }
 .gallery__cta .script {
   font-size: 1.4em;
+}
+
+
+/* ---------- New Zealand note ---------- */
+
+.hero__nz {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: clamp(20px, 3vw, 28px) 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.hero__nz-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 10px 1px rgba(255, 194, 122, 0.7);
+}
+.order__nz {
+  color: var(--amber) !important;
 }
