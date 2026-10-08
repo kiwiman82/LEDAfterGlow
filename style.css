@@ -15,8 +15,11 @@
   --ember: #f0923f;
   --line: rgba(242, 238, 230, 0.16);
 
-  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Newsreader", Georgia, "Times New Roman", serif;
+  /* Cormorant Garamond for headings: a classic high-contrast serif that
+     feels like fine print and photography. Jost for everything you read or
+     click: a clean geometric sans that stays out of the way. */
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
 
   --gutter: clamp(20px, 5vw, 48px);
   --section-space: clamp(72px, 10vw, 136px);
@@ -109,9 +112,9 @@ h2,
 h3 {
   margin: 0;
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 88;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -141,7 +144,7 @@ p {
   padding: 10px 16px;
   background: var(--amber);
   color: var(--night);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-weight: 600;
   text-decoration: none;
   border-radius: 8px;
@@ -157,8 +160,7 @@ p {
   padding: 0.85em 1.6em;
   background: var(--amber);
   color: var(--night);
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 92;
+  font-family: var(--font-body);
   font-size: 1.05rem;
   font-weight: 650;
   line-height: 1.2;
@@ -211,7 +213,7 @@ p {
   display: flex;
   gap: clamp(16px, 3vw, 36px);
   margin-left: auto;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.98rem;
 }
 .nav__links a {
@@ -242,9 +244,8 @@ p {
 }
 .brand__word {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 90;
-  font-size: 1.6rem;
-  font-weight: 500;
+  font-size: 1.95rem;
+  font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1;
   /* Bright at the "A", fading to about 10% by the "w", like light dying away */
@@ -282,10 +283,10 @@ p {
 
 .hero h1 {
   max-width: 13ch;
-  font-size: clamp(2.7rem, 5.8vw, 4.9rem);
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.035em;
+  font-size: clamp(3.1rem, 6.6vw, 5.7rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.015em;
   color: var(--porcelain);
   color: color-mix(in srgb, var(--porcelain) calc(62% + var(--lit) * 38%), var(--night));
   text-shadow:
@@ -295,9 +296,11 @@ p {
 
 .lede {
   margin-top: clamp(20px, 3vw, 32px);
-  max-width: 38ch;
-  font-size: clamp(1.2rem, 2vw, 1.4rem);
-  line-height: 1.5;
+  max-width: 42ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw, 1.7rem);
+  font-weight: 500;
+  line-height: 1.35;
   color: var(--muted);
 }
 
@@ -407,8 +410,7 @@ p {
   align-items: center;
   gap: 12px;
   margin: 0;
-  font-family: var(--font-display);
-  font-variation-settings: "wdth" 92;
+  font-family: var(--font-body);
   font-size: 0.95rem;
   letter-spacing: 0.01em;
   color: var(--muted);
@@ -437,7 +439,7 @@ p {
 .hint-inline {
   display: block;
   margin-top: 0.4em;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.95rem;
   color: var(--amber);
 }
@@ -453,8 +455,8 @@ p {
 }
 
 .section__title {
-  font-size: clamp(2rem, 4.6vw, 3.4rem);
-  font-weight: 750;
+  font-size: clamp(2.4rem, 5.2vw, 3.9rem);
+  font-weight: 600;
 }
 .section__intro {
   margin-top: 16px;
@@ -462,13 +464,15 @@ p {
 }
 
 h2 {
-  font-size: clamp(2rem, 4.6vw, 3.4rem);
-  font-weight: 750;
+  font-size: clamp(2.4rem, 5.2vw, 3.9rem);
+  font-weight: 600;
 }
 
 .big {
-  font-size: clamp(1.25rem, 2.2vw, 1.5rem);
-  line-height: 1.55;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2.4vw, 1.8rem);
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .note {
@@ -511,7 +515,7 @@ h2 {
 }
 .x-label {
   fill: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 500;
 }
@@ -544,7 +548,7 @@ h2 {
   height: 52px;
   font-family: var(--font-display);
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--night);
   background: var(--amber);
   border-radius: 50%;
@@ -563,7 +567,7 @@ h2 {
 .steps h3 {
   margin-bottom: 12px;
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 .steps p {
   color: var(--muted);
@@ -587,7 +591,7 @@ h2 {
 }
 .form-row h3 {
   font-size: 1.7rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 .form-row p {
   margin: 0;
@@ -596,7 +600,7 @@ h2 {
 .form-row__price {
   justify-self: end;
   text-align: right;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.98rem;
   color: var(--amber);
   white-space: nowrap;
@@ -647,7 +651,7 @@ h2 {
   right: 0;
   bottom: 0;
   padding: 28px 16px 14px;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.95rem;
   background: linear-gradient(transparent, rgba(8, 11, 24, 0.85));
 }
@@ -694,7 +698,7 @@ h2 {
   padding: 24px;
   text-align: center;
   color: var(--muted);
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 1.05rem;
   background: linear-gradient(160deg, var(--dusk-2), var(--night));
   border: 1px solid var(--line);
@@ -815,9 +819,9 @@ details p {
 .form label {
   display: grid;
   gap: 8px;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.98rem;
-  font-weight: 550;
+  font-weight: 500;
 }
 .form input,
 .form select,
@@ -874,7 +878,7 @@ details p {
   padding: 0.45em 1em;
   color: var(--porcelain);
   font: inherit;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.92rem;
   background: rgba(242, 238, 230, 0.1);
   border: 1px solid var(--line);
@@ -990,4 +994,129 @@ details p {
   .shot--empty::before {
     transition: none;
   }
+}
+
+
+/* ---------- Dark dropdowns and the total ---------- */
+
+.cselect {
+  position: relative;
+}
+.cselect__native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+.cselect__button {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0.8em 2.3em 0.8em 0.9em;
+  text-align: left;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--porcelain);
+  background: rgba(242, 238, 230, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.cselect__button::after {
+  content: "";
+  position: absolute;
+  right: 1.05em;
+  top: 50%;
+  width: 0.5em;
+  height: 0.5em;
+  border-right: 1.5px solid var(--amber);
+  border-bottom: 1.5px solid var(--amber);
+  transform: translateY(-70%) rotate(45deg);
+  transition: transform 0.2s;
+}
+.cselect__button[aria-expanded="true"]::after {
+  transform: translateY(-25%) rotate(-135deg);
+}
+.cselect__button:hover {
+  background: rgba(242, 238, 230, 0.1);
+  border-color: rgba(255, 194, 122, 0.5);
+}
+.cselect__button:focus-visible,
+.cselect__button[aria-expanded="true"] {
+  outline: none;
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(255, 194, 122, 0.22);
+}
+.cselect__list {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #1b2344;
+  border: 1px solid rgba(255, 194, 122, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 0 30px rgba(255, 176, 100, 0.12);
+}
+.cselect__list[hidden] {
+  display: none;
+}
+.cselect__list li {
+  padding: 0.6em 0.8em;
+  border-radius: 6px;
+  color: var(--porcelain);
+  cursor: pointer;
+}
+.cselect__list li.is-active,
+.cselect__list li:hover {
+  background: rgba(255, 194, 122, 0.14);
+}
+.cselect__list li[aria-selected="true"] {
+  color: var(--amber);
+}
+.cselect__list li[aria-selected="true"]::after {
+  content: " \2713";
+}
+/* Without JavaScript the normal dropdown stays, so at least tint its list */
+.form select option {
+  background: var(--dusk);
+  color: var(--porcelain);
+}
+
+.form__total {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  padding: 16px 18px;
+  background: rgba(255, 194, 122, 0.07);
+  border: 1px solid rgba(255, 194, 122, 0.3);
+  border-radius: 10px;
+}
+.form__total-label {
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.form__total-amount {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--amber);
+  font-variant-numeric: lining-nums;
+  text-shadow: 0 0 22px rgba(255, 176, 100, 0.45);
+}
+.form__total-note {
+  flex-basis: 100%;
+  font-size: 0.9rem;
+  color: var(--muted);
 }

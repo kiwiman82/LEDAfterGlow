@@ -10,7 +10,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -158,7 +158,8 @@
         <!--
           PRICES: photo tower $55 (single photo), additional photos $10 each,
           complete lithophane $75, glow-in-the-dark +$10.
-          The same prices appear in the quote form further down, so change them in both places.
+          The same prices appear in the quote form further down (as data-price on each option,
+          and in the option text), so change them in both places.
         -->
         <ul class="forms">
           <li class="form-row">
@@ -299,24 +300,24 @@
           </div>
           <label for="product">What would you like?
             <select id="product" name="product">
-              <option>Complete lithophane ($75)</option>
-              <option>Photo tower only ($55)</option>
-              <option>Not sure yet</option>
+              <option data-price="75">Complete lithophane ($75)</option>
+              <option data-price="55">Photo tower only ($55)</option>
+              <option data-price="55" data-from="true">Not sure yet</option>
             </select>
           </label>
           <div class="form__row">
             <label for="finish">Finish
               <select id="finish" name="finish">
-                <option>Plain white</option>
-                <option>Glow-in-the-dark (+$10)</option>
+                <option data-price="0">Plain white</option>
+                <option data-price="10">Glow-in-the-dark (+$10)</option>
               </select>
             </label>
             <label for="photos">How many photos?
               <select id="photos" name="photos">
-                <option>One photo ($0 extra)</option>
-                <option>Two photos (+$10)</option>
-                <option>Three photos (+$20)</option>
-                <option>Four photos (+$30)</option>
+                <option data-price="0">One photo ($0 extra)</option>
+                <option data-price="10">Two photos (+$10)</option>
+                <option data-price="20">Three photos (+$20)</option>
+                <option data-price="30">Four photos (+$30)</option>
               </select>
             </label>
           </div>
@@ -338,6 +339,12 @@
           <label for="details">Tell us about it
             <textarea id="details" name="details" rows="5" placeholder="Who is in the photo, who it's for, and when you need it."></textarea>
           </label>
+          <div class="form__total" aria-live="polite">
+            <span class="form__total-label">Estimated total</span>
+            <output class="form__total-amount" id="total" for="product finish photos">$75</output>
+            <span class="form__total-note" id="total-note">NZD. Postage is extra and we'll confirm it before you pay.</span>
+            <input type="hidden" name="estimated_total" id="estimated_total" value="">
+          </div>
           <button class="btn" type="submit" id="send">Send request</button>
           <p class="form__status" role="status" aria-live="polite"></p>
         </form>
@@ -416,6 +423,111 @@
       }
       photoSelect.addEventListener('change', showPhotoFields);
       showPhotoFields();
+
+      // Estimated total and dark-themed dropdowns
+      var selects = form.querySelectorAll('select');
+      var totalEl = document.getElementById('total');
+      var totalNote = document.getElementById('total-note');
+      var totalField = document.getElementById('estimated_total');
+
+      function updateTotal() {
+        var sum = 0, from = false;
+        selects.forEach(function (sel) {
+          var opt = sel.options[sel.selectedIndex];
+          sum += Number(opt.getAttribute('data-price')) || 0;
+          if (opt.getAttribute('data-from')) from = true;
+        });
+        var text = (from ? 'From ' : '') + '$' + sum;
+        totalEl.textContent = text;
+        totalNote.textContent = from
+          ? "NZD. Pick a product above for an exact price. Postage is extra and we'll confirm it before you pay."
+          : "NZD. Postage is extra and we'll confirm it before you pay.";
+        totalField.value = text + ' NZD (postage extra)';
+      }
+      form.addEventListener('change', updateTotal);
+
+      // Replace the browser's own dropdown list (which ignores our dark theme)
+      // with a styled one. The real <select> stays in the form, hidden, so
+      // the answers are still submitted and the form works without JavaScript.
+      selects.forEach(function (sel, n) {
+        var wrap = document.createElement('div');
+        wrap.className = 'cselect';
+        var button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'cselect__button';
+        button.setAttribute('aria-haspopup', 'listbox');
+        button.setAttribute('aria-expanded', 'false');
+        var list = document.createElement('ul');
+        list.className = 'cselect__list';
+        list.setAttribute('role', 'listbox');
+        list.id = 'cselect-' + n;
+        list.hidden = true;
+        button.setAttribute('aria-controls', list.id);
+        var items = Array.prototype.map.call(sel.options, function (opt, i) {
+          var li = document.createElement('li');
+          li.setAttribute('role', 'option');
+          li.id = list.id + '-' + i;
+          li.textContent = opt.textContent;
+          li.addEventListener('mousedown', function (e) { e.preventDefault(); });
+          li.addEventListener('click', function () { choose(i); close(); button.focus(); });
+          list.appendChild(li);
+          return li;
+        });
+        var active = sel.selectedIndex;
+
+        function paint() {
+          button.textContent = sel.options[sel.selectedIndex].textContent;
+          items.forEach(function (li, i) {
+            li.setAttribute('aria-selected', i === sel.selectedIndex ? 'true' : 'false');
+            li.classList.toggle('is-active', i === active);
+          });
+        }
+        function choose(i) {
+          if (i !== sel.selectedIndex) {
+            sel.selectedIndex = i;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          active = i;
+          paint();
+        }
+        function open() {
+          list.hidden = false;
+          button.setAttribute('aria-expanded', 'true');
+          active = sel.selectedIndex;
+          paint();
+        }
+        function close() {
+          list.hidden = true;
+          button.setAttribute('aria-expanded', 'false');
+        }
+        button.addEventListener('click', function () { list.hidden ? open() : close(); });
+        button.addEventListener('blur', close);
+        button.addEventListener('keydown', function (e) {
+          var isOpen = !list.hidden;
+          if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (!isOpen) { open(); return; }
+            active = Math.max(0, Math.min(items.length - 1, active + (e.key === 'ArrowDown' ? 1 : -1)));
+            paint();
+          } else if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (isOpen) { choose(active); close(); } else { open(); }
+          } else if (e.key === 'Escape' && isOpen) {
+            e.preventDefault(); close();
+          }
+        });
+        sel.addEventListener('change', paint);
+
+        sel.classList.add('cselect__native');
+        sel.tabIndex = -1;
+        sel.setAttribute('aria-hidden', 'true');
+        sel.parentNode.insertBefore(wrap, sel);
+        wrap.appendChild(button);
+        wrap.appendChild(list);
+        wrap.appendChild(sel);
+        paint();
+      });
+      updateTotal();
 
       // Shrink big phone photos so they fit within the upload limit.
       function shrink(file) {
