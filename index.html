@@ -261,14 +261,14 @@
 
         <!--
           THE QUOTE FORM (FormSubmit)
-          FormSubmit sends submissions to your email inbox at ledafterglow@gmail.com.
-          Confirm the first submission via the activation email, then all submissions
-          will be delivered to your inbox automatically.
+          Submissions are sent to ledafterglow@gmail.com via FormSubmit.
+          JavaScript intercepts the form to prevent redirect and show a local success message.
           Docs: https://formsubmit.co/
         -->
         <form class="form" method="POST" enctype="multipart/form-data"
               action="https://formsubmit.co/ledafterglow@gmail.com">
           <input type="hidden" name="_captcha" value="false">
+          <input type="hidden" name="_redirect" value="">
           <p class="form__trap" aria-hidden="true">
             <label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label>
           </p>
@@ -328,6 +328,7 @@
             <input type="hidden" name="estimated_total" id="estimated_total" value="">
           </div>
           <button class="btn" type="submit" id="send">Send request</button>
+          <p class="form__status" role="status" aria-live="polite"></p>
         </form>
       </div>
     </section>
@@ -389,6 +390,8 @@
 
       // Quote form
       var form = document.querySelector('.form');
+      var status = form.querySelector('.form__status');
+      var sendBtn = document.getElementById('send');
       var photoSelect = document.getElementById('photos');
       var photoNames = ['photo1', 'photo2', 'photo3', 'photo4'];
 
@@ -506,6 +509,39 @@
         paint();
       });
       updateTotal();
+
+      // Form submission: intercept and POST via fetch to prevent redirect
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        sendBtn.disabled = true;
+        status.textContent = 'Sending...';
+        
+        var data = new FormData(form);
+        
+        // Remove empty file inputs to avoid FormSubmit issues
+        photoNames.forEach(function (name) {
+          var file = data.get(name);
+          if (!file || !file.size) {
+            data.delete(name);
+          }
+        });
+
+        fetch(form.action, {
+          method: 'POST',
+          body: data
+        }).then(function (response) {
+          if (!response.ok) { throw new Error('Network response was not ok'); }
+          form.reset();
+          showPhotoFields();
+          status.textContent = "Thanks! We've got your request. We'll reply by email soon.";
+          updateTotal();
+        }).catch(function (err) {
+          console.error('Form submission error:', err);
+          status.textContent = 'That did not send. Please try again or email ledafterglow@gmail.com.';
+        }).then(function () {
+          sendBtn.disabled = false;
+        });
+      });
     })();
 
       // Page-wide glow drifts sideways a little as the page scrolls.
