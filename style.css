@@ -242,11 +242,25 @@ p {
 
 .hero {
   background-color: var(--night);
-  background-image: radial-gradient(
-    55% 65% at 72% 52%,
-    rgba(255, 160, 80, calc(var(--lit) * 0.2)),
-    transparent 72%
-  );
+  background-image:
+    /* warm wash that starts bright in the top-left corner and fades away
+       towards the right and the bottom, like light spilling across the page */
+    linear-gradient(
+      to bottom,
+      transparent 55%,
+      var(--night) 100%
+    ),
+    radial-gradient(
+      90% 100% at 0% 0%,
+      rgba(255, 176, 100, calc(0.1 + var(--glow) * 0.2)) 0%,
+      rgba(255, 160, 80, calc(0.04 + var(--glow) * 0.07)) 40%,
+      transparent 75%
+    ),
+    radial-gradient(
+      55% 65% at 72% 52%,
+      rgba(255, 160, 80, calc(var(--lit) * 0.2)),
+      transparent 72%
+    );
   overflow: hidden;
 }
 .hero__inner {
