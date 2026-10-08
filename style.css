@@ -279,7 +279,8 @@ p {
   line-height: 1;
   color: #7d8194;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
-  opacity: calc(1 - var(--i) * 0.08);
+  /* fades from fully bright at the A to about 75% at the W, and breathes with the pulse */
+  opacity: calc((1 - var(--i) * 0.03) * (0.72 + var(--pulse) * 0.18));
   filter:
     drop-shadow(0 0 calc(var(--glow) * var(--pulse) * 7px) rgba(255, 194, 122, calc(var(--glow) * var(--pulse) * 0.7)))
     drop-shadow(0 0 calc(var(--glow) * 2px) rgba(255, 230, 190, calc(var(--glow) * 0.4)));
