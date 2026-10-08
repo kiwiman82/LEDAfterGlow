@@ -316,7 +316,7 @@
             <label for="photo4" hidden>Photo 4
               <input type="file" id="photo4" name="photo4" accept="image/*">
             </label>
-            <p class="form__hint">Clear, well-lit photos work best. You can also send them when we reply.</p>
+            <p class="form__hint">Clear, well-lit photos work best. You can attach up to 10 MB of photos in total, and larger photos are shrunk automatically when you send. If they are still too large, paste a share link (Google Drive, iCloud or Dropbox) into the box below, or send them when we reply.</p>
           </div>
           <label for="details">Tell us about it
             <textarea id="details" name="details" rows="5" placeholder="Who is in the photo, who it's for, and when you need it."></textarea>
@@ -521,33 +521,115 @@
       });
       updateTotal();
 
-      // Form submission handling for Native POST target into hidden iframe
-      form.addEventListener('submit', function (e) {
-        var totalBytes = 0;
+      // Photos: FormSubmit accepts 10 MB in total per request. We only touch the
+      // photos when we have to: with 3 or more photos, or when they add up to
+      // more than the safe limit, they are shrunk first (in the browser).
+      var SAFE_TOTAL = 9 * 1024 * 1024; // a little under 10 MB, leaving room for the text
+
+      function fallbackEmail() {
+        var link = document.querySelector('.footer a[href^="mailto:"]');
+        return link ? link.textContent : 'us';
+      }
+
+      function loadShrunk(file, maxSide, quality) {
+        return new Promise(function (resolve) {
+          if (!file.type || file.type.indexOf('image/') !== 0) { resolve(file); return; }
+          var url = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            URL.revokeObjectURL(url);
+            var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+            var canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * scale);
+            canvas.height = Math.round(img.height * scale);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(function (blob) {
+              if (!blob || blob.size >= file.size) { resolve(file); return; }
+              resolve(new File([blob], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', quality);
+          };
+          img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+          img.src = url;
+        });
+      }
+
+      function chosenPhotos() {
+        var list = [];
         photoNames.forEach(function (name) {
           var input = document.getElementById(name);
-          if (input && input.files && input.files[0]) {
-            totalBytes += input.files[0].size;
-          }
+          if (input && input.files && input.files[0]) { list.push({ input: input, file: input.files[0] }); }
         });
+        return list;
+      }
 
-        if (totalBytes > 10 * 1024 * 1024) {
-          e.preventDefault();
-          status.textContent = 'Uploaded files total more than 10MB. Please use smaller files or attach fewer photos.';
-          return;
-        }
+      function sizeOf(list) {
+        return list.reduce(function (sum, item) { return sum + item.file.size; }, 0);
+      }
 
+      function putFile(input, file) {
+        var dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+      }
+
+      // Try gentler settings first, and only go smaller if it is still too big.
+      var PASSES = [[2000, 0.85], [1500, 0.75], [1100, 0.65]];
+
+      function shrinkAll(list, passIndex) {
+        var pass = PASSES[passIndex];
+        return Promise.all(list.map(function (item) {
+          return loadShrunk(item.file, pass[0], pass[1]).then(function (small) {
+            item.file = small;
+            putFile(item.input, small);
+          });
+        })).then(function () {
+          if (sizeOf(list) <= SAFE_TOTAL || passIndex === PASSES.length - 1) { return list; }
+          return shrinkAll(list, passIndex + 1);
+        });
+      }
+
+      function send() {
         // Disable unselected file inputs so empty fields are not posted
         photoNames.forEach(function (name) {
           var input = document.getElementById(name);
-          if (input && (!input.files || input.files.length === 0)) {
-            input.disabled = true;
-          }
+          if (input && (!input.files || input.files.length === 0)) { input.disabled = true; }
         });
-
         isSubmitting = true;
         sendBtn.disabled = true;
         status.textContent = 'Sending...';
+        form.submit();
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (isSubmitting) return;
+        var list = chosenPhotos();
+        var needShrink = list.length >= 3 || sizeOf(list) > SAFE_TOTAL;
+
+        if (!needShrink) { send(); return; }
+
+        if (typeof DataTransfer === 'undefined') {
+          if (sizeOf(list) > SAFE_TOTAL) {
+            status.textContent = 'Your photos are too large to send here. Please attach fewer photos, add a share link in the box above, or email them to ' + fallbackEmail() + '.';
+          } else {
+            send();
+          }
+          return;
+        }
+
+        sendBtn.disabled = true;
+        status.textContent = 'Getting your photos ready...';
+        shrinkAll(list, 0).then(function () {
+          if (sizeOf(list) > SAFE_TOTAL) {
+            sendBtn.disabled = false;
+            status.textContent = 'Your photos are still too large to send here, even after shrinking. Please attach fewer photos, add a share link (Google Drive, iCloud, Dropbox) in the box above, or email them to ' + fallbackEmail() + '.';
+            return;
+          }
+          send();
+        }).catch(function () {
+          sendBtn.disabled = false;
+          status.textContent = 'Something went wrong preparing your photos. Please try again, or email them to ' + fallbackEmail() + '.';
+        });
       });
 
       // Listen for the iframe load event after form post completes
