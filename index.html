@@ -51,7 +51,8 @@
         </div>
 
         <div class="hero__plate">
-          <div class="plate">
+          <div class="plate" id="plate" tabindex="0" role="button" aria-pressed="false"
+               aria-label="Lithophane of a cat. Hover over, tap or press Enter to switch the light on or off.">
             <div class="plate__bloom" aria-hidden="true"></div>
             <div class="plate__frame">
               <div class="plate__surface">
@@ -64,10 +65,11 @@
             <div class="plate__base" aria-hidden="true"></div>
           </div>
 
-          <button class="lamp-switch" type="button">
-            <span class="lamp-switch__bulb" aria-hidden="true"></span>
-            <span class="lamp-switch__label">Switch the light off</span>
-          </button>
+          <p class="hint" id="hint">
+            <span class="hint__dot" aria-hidden="true"></span>
+            <span class="hint__text hint__text--hover">Hover over the photo to light it up</span>
+            <span class="hint__text hint__text--tap">Tap the photo to light it up</span>
+          </p>
         </div>
       </div>
     </section>
@@ -188,24 +190,30 @@
     <section class="section section--dusk" id="gallery">
       <div class="wrap">
         <h2 class="section__title">Gallery</h2>
-        <p class="section__intro">Finished pieces are added here as they are made.</p>
+        <p class="section__intro">Finished pieces are added here as they are made. <span class="hint-inline"><span class="hint-inline__hover">Hover over a piece to see it lit.</span><span class="hint-inline__tap">Tap a piece to see it lit.</span></span></p>
 
         <div class="gallery">
           <!--
             HOW TO ADD YOUR OWN PHOTOS
             1. Put your image files in a folder called "images" next to this file.
-            2. Replace one of the "shot--empty" blocks below with this:
+            2. Replace one of the "shot--empty" blocks below with this. Use an unlit and a
+               lit photo of the same piece, and hovering will switch the light on:
 
-            <figure class="shot">
-              <img src="images/your-photo.jpg" alt="Describe the piece, e.g. Wall plaque of a Labrador on a beach" loading="lazy">
-              <figcaption>Wall plaque, Labrador portrait</figcaption>
+            <figure class="shot shot--lit shot--tall" tabindex="0">
+              <img class="shot__off" src="images/labrador-off.jpg" alt="Labrador portrait lithophane, unlit" loading="lazy">
+              <img class="shot__on" src="images/labrador-on.jpg" alt="The same lithophane lit from behind" loading="lazy">
+              <figcaption>Labrador portrait</figcaption>
             </figure>
+
+            With only one photo, use a plain <figure class="shot"> with a single <img>.
 
             Add as many as you like. They flow into the grid automatically.
           -->
-          <figure class="shot shot--tall">
-            <img src="images/litho-on.jpg" width="700" height="1100" loading="lazy"
-                 alt="A complete lithophane of a fluffy cat, lit from behind on a wooden base">
+          <figure class="shot shot--lit shot--tall" tabindex="0">
+            <img class="shot__off" src="images/litho-off.jpg" width="700" height="1100" loading="lazy"
+                 alt="A lithophane of a fluffy cat, unlit. It looks like plain white plastic.">
+            <img class="shot__on" src="images/litho-on.jpg" width="700" height="1100" loading="lazy"
+                 alt="The same lithophane lit from behind, showing the cat's face and fur.">
             <figcaption>Complete lithophane, cat portrait</figcaption>
           </figure>
           <figure class="shot shot--empty shot--tall">
@@ -355,28 +363,41 @@
   <script>
     (function () {
       var page = document.getElementById('page');
-      var btn = document.querySelector('.lamp-switch');
-      var label = btn.querySelector('.lamp-switch__label');
+      var plate = document.getElementById('plate');
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var canHover = window.matchMedia('(hover: hover)').matches;
       var touched = false;
-
-      function isLit() {
-        return !page.classList.contains('is-off');
-      }
+      var introTimer;
 
       function setLit(on) {
         page.classList.toggle('is-off', !on);
-        label.textContent = on ? 'Switch the light off' : 'Switch the light on';
+        plate.setAttribute('aria-pressed', on ? 'true' : 'false');
       }
 
-      // Page-load moment: the plaque starts dark, then the light comes on.
+      // Opening moment: the light comes on briefly to show what the photo can do,
+      // then settles back to plain white until the visitor tries it.
       setLit(false);
-      setTimeout(function () { if (!touched) setLit(true); }, reduceMotion ? 0 : 900);
+      if (!reduceMotion) {
+        introTimer = setTimeout(function () { if (!touched) setLit(true); }, 900);
+        setTimeout(function () { if (!touched) setLit(false); }, 3600);
+      }
+      function interact(on) { touched = true; clearTimeout(introTimer); setLit(on); }
 
-      btn.addEventListener('click', function () {
-        touched = true;
-        setLit(!isLit());
+      if (canHover) {
+        plate.addEventListener('mouseenter', function () { interact(true); });
+        plate.addEventListener('mouseleave', function () {
+          if (!plate.matches(':focus-visible')) interact(false);
+        });
+      }
+      // Touch screens and keyboards: tap or Enter/Space switches it on and off.
+      plate.addEventListener('click', function () {
+        if (canHover && plate.matches(':hover')) return; // hover already handled it
+        interact(page.classList.contains('is-off'));
       });
+      plate.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); interact(page.classList.contains('is-off')); }
+      });
+      plate.addEventListener('blur', function () { if (!plate.matches(':hover')) interact(false); });
 
       // Quote form
       var form = document.querySelector('.form');

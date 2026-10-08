@@ -395,34 +395,51 @@ p {
   box-shadow: 0 0 14px 3px rgba(255, 194, 122, 0.8);
 }
 
-.lamp-switch {
-  position: relative;
-  z-index: 2; /* always above the glow around the plaque */
+.plate {
+  cursor: pointer;
+  outline-offset: 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Small helper line under the photo */
+.hint {
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  padding: 0.65em 1.3em 0.65em 1em;
-  background: rgba(242, 238, 230, 0.06);
-  color: var(--porcelain);
+  margin: 0;
   font-family: var(--font-display);
   font-variation-settings: "wdth" 92;
-  font-size: 1rem;
-  font-weight: 550;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  color: var(--muted);
 }
-.lamp-switch:hover {
-  background: rgba(242, 238, 230, 0.12);
-  border-color: rgba(255, 194, 122, 0.5);
-}
-.lamp-switch__bulb {
-  width: 14px;
-  height: 14px;
+.hint__dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--amber) calc(var(--lit) * 100%), #4a5072);
   box-shadow: 0 0 calc(var(--lit) * 12px) calc(var(--lit) * 2px) rgba(255, 194, 122, 0.8);
+}
+.hint__text--tap,
+.hint-inline__tap {
+  display: none;
+}
+@media (hover: none) {
+  .hint__text--hover,
+  .hint-inline__hover {
+    display: none;
+  }
+  .hint__text--tap,
+  .hint-inline__tap {
+    display: inline;
+  }
+}
+.hint-inline {
+  display: block;
+  margin-top: 0.4em;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--amber);
 }
 
 /* ---------- Sections ---------- */
@@ -636,6 +653,31 @@ h2 {
 }
 .shot--tall {
   aspect-ratio: 7 / 11;
+}
+/* Gallery pieces with an unlit and a lit photo: the light comes on over the piece */
+.shot--lit {
+  cursor: pointer;
+  outline-offset: 4px;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow 0.8s ease;
+}
+.shot--lit img {
+  position: absolute;
+  inset: 0;
+}
+.shot--lit .shot__on {
+  opacity: 0;
+  transition: opacity 0.9s cubic-bezier(0.3, 0.1, 0.2, 1);
+}
+.shot--lit:hover .shot__on,
+.shot--lit:focus-visible .shot__on,
+.shot--lit:focus .shot__on {
+  opacity: 1;
+}
+.shot--lit:hover,
+.shot--lit:focus-visible,
+.shot--lit:focus {
+  box-shadow: 0 0 60px 6px rgba(255, 176, 100, 0.35);
 }
 .shot--portrait {
   aspect-ratio: 4 / 5;
@@ -938,6 +980,10 @@ details p {
   }
   .page,
   .page.is-off {
+    transition: none;
+  }
+  .shot--lit,
+  .shot--lit .shot__on {
     transition: none;
   }
   .btn,
