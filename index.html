@@ -12,6 +12,59 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Lora:wght@400;500;600&family=Great+Vibes&display=swap">
   <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* Confirmation Popup Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 20, 38, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .modal-overlay.is-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-box {
+      background: #182038;
+      border: 1px solid rgba(139, 212, 255, 0.2);
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      color: #e8f8ff;
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.is-visible .modal-box {
+      transform: translateY(0);
+    }
+    .modal-box h3 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.2rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      color: #ffffff;
+    }
+    .modal-box p {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #a3c2db;
+      margin-bottom: 1.75rem;
+    }
+  </style>
 </head>
 
 <body>
@@ -253,12 +306,11 @@
           <p>Attach your photos with the form, or send them when we reply.</p>
         </div>
 
-        <!--
-          THE QUOTE FORM (FormSubmit Standard Native Endpoint)
-          Submissions POST natively to FormSubmit to preserve multipart binary file attachments.
-        -->
+        <!-- Hidden Target Iframe to handle background native form submission -->
+        <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
         <form class="form" method="POST" enctype="multipart/form-data"
-              action="https://formsubmit.co/ledafterglow@gmail.com">
+              action="https://formsubmit.co/ledafterglow@gmail.com" target="hidden_iframe">
           <input type="hidden" name="_captcha" value="false">
           <p class="form__trap" aria-hidden="true">
             <label>Leave this empty <input name="_honey" tabindex="-1" autocomplete="off"></label>
@@ -340,6 +392,15 @@
 
   </div>
 
+  <!-- ============ CONFIRMATION MODAL ============ -->
+  <div class="modal-overlay" id="confirm-modal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h3 id="modal-title">Request Sent!</h3>
+      <p>Thanks! We've received your quote request. We'll reply to your email with details and postage pricing shortly.</p>
+      <button class="btn" type="button" id="close-modal">Got it</button>
+    </div>
+  </div>
+
   <script>
     (function () {
       var page = document.getElementById('page');
@@ -382,6 +443,10 @@
       var sendBtn = document.getElementById('send');
       var photoSelect = document.getElementById('photos');
       var photoNames = ['photo1', 'photo2', 'photo3', 'photo4'];
+      var modal = document.getElementById('confirm-modal');
+      var closeModalBtn = document.getElementById('close-modal');
+      var iframe = document.getElementById('hidden_iframe');
+      var isSubmitting = false;
 
       function showPhotoFields() {
         var count = photoSelect.selectedIndex + 1;
@@ -493,7 +558,7 @@
       });
       updateTotal();
 
-      // Form submission handling for Native POST
+      // Form submission handling for Native POST target into hidden iframe
       form.addEventListener('submit', function (e) {
         var totalBytes = 0;
         photoNames.forEach(function (name) {
@@ -509,7 +574,7 @@
           return;
         }
 
-        // Disable unselected file inputs so empty fields are not included in the POST request
+        // Disable unselected file inputs so empty fields are not posted
         photoNames.forEach(function (name) {
           var input = document.getElementById(name);
           if (input && (!input.files || input.files.length === 0)) {
@@ -517,8 +582,42 @@
           }
         });
 
+        isSubmitting = true;
         sendBtn.disabled = true;
         status.textContent = 'Sending...';
+      });
+
+      // Listen for the iframe load event after form post completes
+      iframe.addEventListener('load', function () {
+        if (!isSubmitting) return;
+        isSubmitting = false;
+
+        // Reset form & inputs
+        photoNames.forEach(function (name) {
+          var input = document.getElementById(name);
+          if (input) input.disabled = false;
+        });
+        form.reset();
+        showPhotoFields();
+        updateTotal();
+        sendBtn.disabled = false;
+        status.textContent = '';
+
+        // Open popup modal
+        modal.classList.add('is-visible');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+
+      // Close Modal logic
+      closeModalBtn.addEventListener('click', function () {
+        modal.classList.remove('is-visible');
+        modal.setAttribute('aria-hidden', 'true');
+      });
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          modal.classList.remove('is-visible');
+          modal.setAttribute('aria-hidden', 'true');
+        }
       });
     })();
 
