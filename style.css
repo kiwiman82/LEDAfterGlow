@@ -243,7 +243,7 @@ p {
   opacity: calc(var(--glow) * 0.5);
 }
 /* Afterglow: each letter sits in its own little litho heart, white like the
-   L.E.D. tiles, with a grey letter. The hearts fade from bright to about 10%
+   L.E.D. tiles, with a grey letter. The hearts fade from bright to about 35%
    across the word, and their glow follows --glow like the tiles do. */
 .brand__word {
   display: inline-flex;
@@ -265,7 +265,7 @@ p {
   line-height: 1;
   color: #7d8194;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
-  opacity: calc(1 - var(--i) * 0.1125);
+  opacity: calc(1 - var(--i) * 0.08);
   filter:
     drop-shadow(0 0 calc(var(--glow) * 7px) rgba(255, 194, 122, calc(var(--glow) * 0.7)))
     drop-shadow(0 0 calc(var(--glow) * 2px) rgba(255, 230, 190, calc(var(--glow) * 0.4)));
