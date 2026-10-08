@@ -73,6 +73,27 @@ body {
     --glow 9s cubic-bezier(0.1, 0.7, 0.3, 1);
 }
 
+/* Page-wide glow. It stays fixed to the screen, so as you scroll the page it
+   keeps washing over every section: brightest in the top-left corner and
+   fading away towards the right and the bottom. --sx drifts it sideways a
+   little as you scroll (set by JavaScript). It also follows --glow, so it dims
+   when the light is switched off. */
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      80% 90% at var(--sx, 0%) 0%,
+      rgba(255, 176, 100, calc(0.06 + var(--glow) * 0.16)) 0%,
+      rgba(255, 160, 80, calc(0.02 + var(--glow) * 0.06)) 40%,
+      transparent 75%
+    );
+  mix-blend-mode: screen;
+}
+
 img,
 svg {
   display: block;
@@ -243,19 +264,6 @@ p {
 .hero {
   background-color: var(--night);
   background-image:
-    /* warm wash that starts bright in the top-left corner and fades away
-       towards the right and the bottom, like light spilling across the page */
-    linear-gradient(
-      to bottom,
-      transparent 55%,
-      var(--night) 100%
-    ),
-    radial-gradient(
-      90% 100% at 0% 0%,
-      rgba(255, 176, 100, calc(0.1 + var(--glow) * 0.2)) 0%,
-      rgba(255, 160, 80, calc(0.04 + var(--glow) * 0.07)) 40%,
-      transparent 75%
-    ),
     radial-gradient(
       55% 65% at 72% 52%,
       rgba(255, 160, 80, calc(var(--lit) * 0.2)),

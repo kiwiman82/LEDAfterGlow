@@ -457,6 +457,23 @@
         });
       });
     })();
+
+      // Page-wide glow drifts sideways a little as the page scrolls.
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var root = document.getElementById('page');
+        var queued = false;
+        function update() {
+          queued = false;
+          var max = document.documentElement.scrollHeight - window.innerHeight;
+          var t = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+          root.style.setProperty('--sx', (t * 45).toFixed(1) + '%');
+        }
+        window.addEventListener('scroll', function () {
+          if (!queued) { queued = true; requestAnimationFrame(update); }
+        }, { passive: true });
+        update();
+      })();
   </script>
 </body>
 </html>
