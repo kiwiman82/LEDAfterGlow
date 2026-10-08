@@ -1038,7 +1038,7 @@ details p {
 
 @media (max-width: 520px) {
   /* On phones the name gets the whole header: the hearts grow to fill the
-     width (the Get a quote button is in the hero and further down the page) */
+     width */
   .brand {
     gap: 8px;
   }
@@ -1051,26 +1051,10 @@ details p {
   .heart {
     --hw: calc((100vw - 2 * var(--gutter) - 56px - 8px - 9px) / 9);
   }
-  /* Two rows: the name across the whole width, then the quote button below.
-     The header scrolls away on phones so it does not use up the screen. */
-  .nav {
-    position: relative;
-  }
-  .nav__inner {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-block: 14px;
-    min-height: 0;
-  }
-  .nav .brand {
-    flex: 1 1 100%;
-    justify-content: space-between;
-  }
+  /* The header stays put as you scroll. The quote button is left out of it on
+     phones, because the first button in the page is already "Get a quote". */
   .nav .btn--small {
-    flex: 1 1 100%;
-    text-align: center;
-    padding-block: 0.7em;
-    font-size: 1rem;
+    display: none;
   }
   .form__row {
     grid-template-columns: minmax(0, 1fr);
