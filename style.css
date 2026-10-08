@@ -16,10 +16,12 @@
   --line: rgba(242, 238, 230, 0.16);
 
   /* Cormorant Garamond for headings: a classic high-contrast serif that
-     feels like fine print and photography. Jost for everything you read or
-     click: a clean geometric sans that stays out of the way. */
+     feels like fine print and photography. Lora for everything you read or
+     click: a warm, calligraphic serif that stays easy to read. Great Vibes is
+     the handwritten script used on key words to add a touch of love. */
   --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
-  --font-body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Lora", "Iowan Old Style", Georgia, serif;
+  --font-script: "Great Vibes", "Snell Roundhand", "Apple Chancery", cursive;
 
   --gutter: clamp(20px, 5vw, 48px);
   --section-space: clamp(72px, 10vw, 136px);
@@ -62,8 +64,8 @@ body {
   background: var(--night);
   color: var(--porcelain);
   font-family: var(--font-body);
-  font-size: 1.125rem;
-  line-height: 1.65;
+  font-size: 1.06rem;
+  line-height: 1.7;
 }
 
 /* All the "light" styling reads --lit from this wrapper.
@@ -1185,4 +1187,27 @@ details p {
   flex-basis: 100%;
   font-size: 0.9rem;
   color: var(--muted);
+}
+
+
+/* ---------- Script highlights ---------- */
+
+.script {
+  font-family: var(--font-script);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.28em;
+  line-height: 0.8;
+  letter-spacing: 0;
+  color: var(--amber);
+  text-shadow: 0 0 calc(var(--glow) * 22px) rgba(255, 176, 100, calc(var(--glow) * 0.5));
+}
+.hero h1 .script {
+  color: color-mix(in srgb, var(--amber) calc(55% + var(--lit) * 45%), #8a8fa6);
+  text-shadow:
+    0 0 calc(var(--lit) * 36px) rgba(255, 176, 100, calc(var(--lit) * 0.7)),
+    0 0 calc(var(--lit) * 8px) rgba(255, 220, 170, calc(var(--lit) * 0.4));
+}
+.gallery__cta .script {
+  font-size: 1.4em;
 }
