@@ -42,6 +42,13 @@
   initial-value: 1;
 }
 
+/* Breathing glow on the headline words. */
+@property --breath {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 @property --lit {
   syntax: "<number>";
   inherits: true;
@@ -287,7 +294,8 @@ p {
     drop-shadow(0 0 calc(var(--glow) * 2px) rgba(255, 230, 190, calc(var(--glow) * 0.4)));
   /* The glow breathes slowly and ripples from the A to the W, like an afterglow */
   animation: heart-pulse 6s ease-in-out infinite;
-  animation-delay: calc(var(--i) * -0.45s);
+  /* later hearts peak a moment later, so the glow travels left to right */
+  animation-delay: calc(var(--i) * 0.45s - 6s);
 }
 @keyframes heart-pulse {
   0%, 100% { --pulse: 0.35; }
@@ -1253,4 +1261,27 @@ details p {
 }
 .order__nz {
   color: var(--amber) !important;
+}
+
+
+/* ---------- Headline breathing ---------- */
+
+/* Each word of the headline swells with light and eases off again, one after
+   the other from left to right, so a slow wave of glow runs along the line.
+   The glow still follows the light: it is strongest when the photo is lit. */
+.hero h1 .w {
+  text-shadow:
+    0 0 calc(var(--lit) * var(--breath) * 44px) rgba(255, 194, 122, calc(var(--lit) * var(--breath) * 0.5)),
+    0 0 calc(var(--lit) * var(--breath) * 8px) rgba(255, 220, 170, calc(var(--lit) * var(--breath) * 0.35));
+  animation: title-breathe 7s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.55s - 7s);
+}
+@keyframes title-breathe {
+  0%, 100% { --breath: 0.15; }
+  50% { --breath: 1.9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero h1 .w {
+    animation: none;
+  }
 }
