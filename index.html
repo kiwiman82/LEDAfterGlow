@@ -188,7 +188,7 @@
             <span class="form-row__price">+$10</span>
           </li>
         </ul>
-        <p class="note">Each piece is about the size of a 1 litre carton. Prices are in NZD. We're based in New Zealand and currently only supply within New Zealand. Postage is a flat $12 anywhere in New Zealand. Allow about 1 week from order confirmation to your doorstep. Not sure which suits you? Ask in the form.</p>
+        <p class="note">Each piece is about the size of a 1 litre carton. Prices are in NZD. We're based in New Zealand and currently only supply within New Zealand. Postage is a flat $12 anywhere in New Zealand, or $15 if you want a signature on delivery. Allow about 1 week from order confirmation to your doorstep. Not sure which suits you? Ask in the form.</p>
       </div>
     </section>
 
@@ -249,7 +249,7 @@
           </details>
           <details>
             <summary>How long will it take, and what does postage cost?</summary>
-            <p>Allow about 1 week from the day we confirm your order to the day it arrives at your door. Postage is a flat $12 anywhere in New Zealand.</p>
+            <p>Allow about 1 week from the day we confirm your order to the day it arrives at your door. Postage is a flat $12 anywhere in New Zealand. If you would like someone to sign for it on delivery, choose signature delivery in the form for $3 extra.</p>
           </details>
           <details>
             <summary>Do you ship outside New Zealand?</summary>
@@ -268,7 +268,7 @@
       <div class="wrap order">
         <div class="order__text">
           <h2>Ask for a <em class="script">quote</em></h2>
-          <p class="big">Tell us what you'd like made. We'll reply to confirm your order before anything is made. Postage is a flat $12 within New Zealand, and you can expect about 1 week from order confirmation to your doorstep.</p>
+          <p class="big">Tell us what you'd like made. We'll reply to confirm your order before anything is made. Postage is a flat $12 within New Zealand ($15 with a signature on delivery), and you can expect about 1 week from order confirmation to your doorstep.</p>
           <p>Attach your photos with the form, or send them when we reply.</p>
           <p class="order__nz">We're based in New Zealand and currently only supply within New Zealand.</p>
         </div>
@@ -313,6 +313,12 @@
               </select>
             </label>
           </div>
+          <label for="delivery">Delivery
+            <select id="delivery" name="delivery">
+              <option data-price="0" data-postage="12">Standard delivery ($12)</option>
+              <option data-price="0" data-postage="15">Signature on delivery ($15)</option>
+            </select>
+          </label>
           <div class="form__photos" id="photo-fields">
             <label for="photo1">Photo 1 (optional)
               <input type="file" id="photo1" name="photo1" accept="image/*">
@@ -439,18 +445,21 @@
 
       function updateTotal() {
         var sum = 0, from = false;
+        var postage = POSTAGE;
         selects.forEach(function (sel) {
           var opt = sel.options[sel.selectedIndex];
           sum += Number(opt.getAttribute('data-price')) || 0;
           if (opt.getAttribute('data-from')) from = true;
+          if (opt.getAttribute('data-postage')) postage = Number(opt.getAttribute('data-postage'));
         });
         var items = sum;
-        sum += POSTAGE;
+        sum += postage;
         var text = (from ? 'From ' : '') + '$' + sum;
         totalEl.textContent = text;
         totalNote.textContent = (from ? 'NZD. Pick a product above for an exact price. ' : 'NZD. ') +
-          'Includes $12 postage within New Zealand. About 1 week from order confirmation to your doorstep.';
-        totalField.value = text + ' NZD (items $' + items + ' + $' + POSTAGE + ' postage)';
+          'Includes $' + postage + ' postage' + (postage > POSTAGE ? ' (signature on delivery)' : '') +
+          ' within New Zealand. About 1 week from order confirmation to your doorstep.';
+        totalField.value = text + ' NZD (items $' + items + ' + $' + postage + ' postage' + (postage > POSTAGE ? ', signature on delivery' : '') + ')';
       }
       form.addEventListener('change', updateTotal);
 
