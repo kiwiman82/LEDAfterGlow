@@ -31,6 +31,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Stamp the stylesheet link with this commit
+        # Phones keep a saved copy of style.css for several minutes. Giving it a new
+        # name for every deploy means the page and its styling always match.
+        run: sed -i "s|style.css?v=[^\"]*|style.css?v=${GITHUB_SHA::8}|" index.html
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
