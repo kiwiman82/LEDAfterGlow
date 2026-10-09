@@ -188,7 +188,7 @@
             <span class="form-row__price">+$10</span>
           </li>
         </ul>
-        <p class="note">Each piece is about the size of a 1 litre carton. Prices are in NZD. We're based in New Zealand and currently only supply within New Zealand. Postage is extra, and we'll confirm the cost before you pay. Not sure which suits you? Ask in the form.</p>
+        <p class="note">Each piece is about the size of a 1 litre carton. Prices are in NZD. We're based in New Zealand and currently only supply within New Zealand. Postage is a flat $12 anywhere in New Zealand. Allow about 1 week from order confirmation to your doorstep. Not sure which suits you? Ask in the form.</p>
       </div>
     </section>
 
@@ -248,6 +248,10 @@
             <p>Both show your photo when the light is on. The glow-in-the-dark option also gives off a soft glow in a dark room after the light has been on. Glow-in-the-dark adds $10.</p>
           </details>
           <details>
+            <summary>How long will it take, and what does postage cost?</summary>
+            <p>Allow about 1 week from the day we confirm your order to the day it arrives at your door. Postage is a flat $12 anywhere in New Zealand.</p>
+          </details>
+          <details>
             <summary>Do you ship outside New Zealand?</summary>
             <p>Not at the moment. We're based in New Zealand and only supply within New Zealand. If that changes, we'll say so here.</p>
           </details>
@@ -264,7 +268,7 @@
       <div class="wrap order">
         <div class="order__text">
           <h2>Ask for a <em class="script">quote</em></h2>
-          <p class="big">Tell us what you'd like made. We'll reply with a price and postage cost before anything is made.</p>
+          <p class="big">Tell us what you'd like made. We'll reply to confirm your order before anything is made. Postage is a flat $12 within New Zealand, and you can expect about 1 week from order confirmation to your doorstep.</p>
           <p>Attach your photos with the form, or send them when we reply.</p>
           <p class="order__nz">We're based in New Zealand and currently only supply within New Zealand.</p>
         </div>
@@ -330,7 +334,7 @@
           <div class="form__total" aria-live="polite">
             <span class="form__total-label">Estimated total</span>
             <output class="form__total-amount" id="total" for="product finish photos">$75</output>
-            <span class="form__total-note" id="total-note">NZD. Postage is extra and we'll confirm it before you pay.</span>
+            <span class="form__total-note" id="total-note">NZD. Includes $12 postage within New Zealand. About 1 week from order confirmation to your doorstep.</span>
             <input type="hidden" name="estimated_total" id="estimated_total" value="">
           </div>
           <button class="btn" type="submit" id="send">Send request</button>
@@ -365,7 +369,7 @@
   <div class="modal-overlay" id="confirm-modal" aria-hidden="true">
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <h3 id="modal-title">Request Sent!</h3>
-      <p>Thanks! We've received your quote request. We'll reply to your email with details and postage pricing shortly.</p>
+      <p>Thanks! We've received your quote request. We'll reply to your email to confirm your order. Allow about 1 week from confirmation to your doorstep.</p>
       <button class="btn" type="button" id="close-modal">Got it</button>
     </div>
   </div>
@@ -431,6 +435,8 @@
       var totalNote = document.getElementById('total-note');
       var totalField = document.getElementById('estimated_total');
 
+      var POSTAGE = 12; // flat postage within New Zealand (NZD)
+
       function updateTotal() {
         var sum = 0, from = false;
         selects.forEach(function (sel) {
@@ -438,12 +444,13 @@
           sum += Number(opt.getAttribute('data-price')) || 0;
           if (opt.getAttribute('data-from')) from = true;
         });
+        var items = sum;
+        sum += POSTAGE;
         var text = (from ? 'From ' : '') + '$' + sum;
         totalEl.textContent = text;
-        totalNote.textContent = from
-          ? "NZD. Pick a product above for an exact price. Postage is extra and we'll confirm it before you pay."
-          : "NZD. Postage is extra and we'll confirm it before you pay.";
-        totalField.value = text + ' NZD (postage extra)';
+        totalNote.textContent = (from ? 'NZD. Pick a product above for an exact price. ' : 'NZD. ') +
+          'Includes $12 postage within New Zealand. About 1 week from order confirmation to your doorstep.';
+        totalField.value = text + ' NZD (items $' + items + ' + $' + POSTAGE + ' postage)';
       }
       form.addEventListener('change', updateTotal);
 
