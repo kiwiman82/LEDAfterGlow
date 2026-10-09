@@ -1377,3 +1377,28 @@ details p {
     animation: none;
   }
 }
+
+
+/* A faint "Opening soon" watermark across the whole page. It stays fixed to the
+   screen, sits behind the menu, and never gets in the way of taps or clicks. */
+.soon-watermark {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+}
+.soon-watermark span {
+  font-family: var(--font-display);
+  font-size: min(8rem, 8.2vw);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 194, 122, 0.045);
+  -webkit-text-stroke: 1px rgba(255, 194, 122, 0.13);
+  transform: rotate(-24deg);
+  user-select: none;
+}
